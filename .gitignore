@@ -1,4 +1,23 @@
+# Virtual environment
 venv/
+
+# Dataset — too large for GitHub
 data/
+
+# Trained model — too large for GitHub
+models/
+
+# Python cache
 __pycache__/
-*.keras
+*.pyc
+*.pyo
+.pytest_cache/
+
+# System files
+.DS_Store
+
+# Keras cache
+~/.keras/
+
+# Plots generated during training
+*.png
