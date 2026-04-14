@@ -2,9 +2,9 @@ import os
 
 
 # Image settings
-IMG_SIZE    = 224
+IMG_SIZE    = 300
 BATCH_SIZE  = 32
-EPOCHS      = 20       
+EPOCHS      = 30       
 NUM_CLASSES = 102       
 LEARNING_RATE = 0.001
 

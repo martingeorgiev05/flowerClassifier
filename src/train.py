@@ -1,22 +1,21 @@
+# src/train.py
 import tensorflow as tf
 from config import EPOCHS, MODEL_SAVE_PATH
 
+
 def train(model, base_model, train_ds, val_ds):
 
-    # Callbacks
     early_stop = tf.keras.callbacks.EarlyStopping(
         monitor='val_loss',
         patience=6,
         restore_best_weights=True
     )
-
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         filepath=MODEL_SAVE_PATH,
         monitor='val_loss',
         save_best_only=True,
         verbose=1
     )
-
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
         factor=0.3,
@@ -26,7 +25,6 @@ def train(model, base_model, train_ds, val_ds):
     )
 
     print("\n Phase 1: Training top layers...\n")
-
     history1 = model.fit(
         train_ds,
         validation_data=val_ds,
@@ -35,13 +33,9 @@ def train(model, base_model, train_ds, val_ds):
     )
 
     print("\n Phase 2: Fine-tuning base model...\n")
-
     base_model.trainable = True
-
-    # Freeze lower layers, train top layers only
-    for layer in base_model.layers[:-30]:
+    for layer in base_model.layers[:-50]:
         layer.trainable = False
-
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
@@ -56,6 +50,5 @@ def train(model, base_model, train_ds, val_ds):
         callbacks=[early_stop, checkpoint, reduce_lr]
     )
 
-    print(f"\n Model saved to: {MODEL_SAVE_PATH}")
-
+    print(f"\n✅ Model saved to: {MODEL_SAVE_PATH}")
     return history1, history2
