@@ -20,4 +20,7 @@ __pycache__/
 ~/.keras/
 
 # Plots generated during training
-*.png
+/confusion_matrix.png
+/training_curves.png
+
+CLAUDE.md
