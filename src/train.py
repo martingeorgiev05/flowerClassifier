@@ -65,7 +65,7 @@ def train(model, base_model, train_ds, val_ds=None):
     if final:
         model.save(MODEL_SAVE_PATH)
     else:
-        model.load_weights(MODEL_SAVE_PATH)
+        model = tf.keras.models.load_model(MODEL_SAVE_PATH)
 
     print(f"\n Model saved to: {MODEL_SAVE_PATH}")
     return history1, history2

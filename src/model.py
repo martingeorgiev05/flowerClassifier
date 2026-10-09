@@ -27,7 +27,6 @@ def build_model():
     model = tf.keras.Sequential(
         [
             data_augmentation,
-            tf.keras.layers.Lambda(tf.keras.applications.efficientnet.preprocess_input),
             base_model,
             tf.keras.layers.GlobalAveragePooling2D(),
             tf.keras.layers.BatchNormalization(),

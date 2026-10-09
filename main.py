@@ -29,7 +29,7 @@ def main():
     model.build(input_shape=(None, IMG_SIZE, IMG_SIZE, 3))
     model.summary()
 
-    history1, history2 = train(model, base_model, train_ds, val_ds)
+    model, history1, history2 = train(model, base_model, train_ds, val_ds)
 
     run_info = {"mode": mode}
     if not args.final:
