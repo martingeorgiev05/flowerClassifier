@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+extend-exclude = ["venv", "data", "models", "notebooks", "frontend"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: import sorting, B: bugbear, UP: pyupgrade
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]  # line length is handled by the formatter
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "config", "api"]
