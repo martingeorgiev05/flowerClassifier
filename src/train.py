@@ -68,4 +68,4 @@ def train(model, base_model, train_ds, val_ds=None):
         model = tf.keras.models.load_model(MODEL_SAVE_PATH)
 
     print(f"\n Model saved to: {MODEL_SAVE_PATH}")
-    return history1, history2
+    return model, history1, history2
