@@ -12,7 +12,7 @@ def _preprocess(image, label):
 
 
 def _one_hot(image, label):
-    return image, tf.one_hote(label, NUM_CLASSES)
+    return image, tf.one_hot(label, NUM_CLASSES)
 
 
 def load_data(final=False):
