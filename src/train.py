@@ -50,8 +50,8 @@ def train(model, base_model, train_ds, val_ds=None):
         layer.trainable = False
 
     # Keep BatchNorm layers frozen
-    for layer in base_model.layers[-50:0]:
-        if isinstance(layer, tf.keras.BatchNormalization):
+    for layer in base_model.layers[-50:]:
+        if isinstance(layer, tf.keras.layers.BatchNormalization):
             layer.trainable = False
 
     model.compile(
