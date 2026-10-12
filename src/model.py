@@ -3,19 +3,23 @@ import tensorflow as tf
 from config import IMG_SIZE, NUM_CLASSES
 
 
-def build_model():
-
-    # Data augmentation
-    data_augmentation = tf.keras.Sequential(
+def build_augmentation():
+    """Random changes that mimic how real photos of the same flow differ."""
+    return tf.keras.Sequential(
         [
-            tf.keras.layers.RandomFlip("horizontal_and_vertical"),
-            tf.keras.layers.RandomRotation(0.3),
-            tf.keras.layers.RandomZoom(0.3),
+            tf.keras.layers.RandomFlip("horizontal"),
+            tf.keras.layers.RandomRotation(0.08),
+            tf.keras.layers.RandomZoom((-0.2, 0.0)),
+            tf.keras.layers.RandomTranslation(0.1, 0.1),
             tf.keras.layers.RandomContrast(0.2),
             tf.keras.layers.RandomBrightness(0.2),
-            tf.keras.layers.RandomTranslation(0.1, 0.1),
         ]
     )
+
+
+def build_model():
+
+    data_augmentation = build_augmentation()
 
     # Load pretrained base
     base_model = tf.keras.applications.EfficientNetB5(
