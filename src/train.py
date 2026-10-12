@@ -56,7 +56,7 @@ def train(model, base_model, train_ds, val_ds=None):
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
-        loss="sparse_categorical_crossentropy",
+        loss=model.loss,
         metrics=["accuracy"],
     )
 

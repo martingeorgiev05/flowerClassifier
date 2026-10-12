@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
-from config import BATCH_SIZE, IMG_SIZE
+from config import BATCH_SIZE, IMG_SIZE, NUM_CLASSES
 
 AUTOTUNE = tf.data.AUTOTUNE
 
@@ -9,6 +9,10 @@ AUTOTUNE = tf.data.AUTOTUNE
 def _preprocess(image, label):
     image = tf.image.resize(image, (IMG_SIZE, IMG_SIZE))
     return image, label
+
+
+def _one_hot(image, label):
+    return image, tf.one_hote(label, NUM_CLASSES)
 
 
 def load_data(final=False):
@@ -31,6 +35,7 @@ def load_data(final=False):
 
     train_ds = (
         train_ds.map(_preprocess, num_parallel_calls=AUTOTUNE)
+        .map(_one_hot, num_parallel_calls=AUTOTUNE)
         .cache()
         .shuffle(2048)
         .batch(BATCH_SIZE)
@@ -39,6 +44,7 @@ def load_data(final=False):
     if val_ds is not None:
         val_ds = (
             val_ds.map(_preprocess, num_parallel_calls=AUTOTUNE)
+            .map(_one_hot, num_parallel_calls=AUTOTUNE)
             .cache()
             .batch(BATCH_SIZE)
             .prefetch(AUTOTUNE)

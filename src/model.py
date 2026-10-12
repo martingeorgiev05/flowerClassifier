@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from config import IMG_SIZE, NUM_CLASSES
+from config import IMG_SIZE, LABEL_SMOOTHING, NUM_CLASSES
 
 
 def build_augmentation():
@@ -34,17 +34,14 @@ def build_model():
     x = base_model(x, training=False)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
     x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dense(512, activation="relu")(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-    x = tf.keras.layers.Dense(256, activation="relu")(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
     outputs = tf.keras.layers.Dense(NUM_CLASSES, activation="softmax")(x)
 
     model = tf.keras.Model(inputs, outputs)
 
     model.compile(
         optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
-        loss="sparse_categorical_crossentropy",
+        loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=LABEL_SMOOTHING),
         metrics=["accuracy"],
     )
 
