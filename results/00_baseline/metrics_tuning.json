@@ -1,0 +1,62 @@
+{
+  "mode": "tuning",
+  "best_val_accuracy": 0.7843,
+  "best_phase1_epoch": 23,
+  "best_phase2_epoch": 1,
+  "split": "test",
+  "num_images": 6149,
+  "top1_accuracy": 0.7328,
+  "top5_accuracy": 0.9232,
+  "most_confused": [
+    {
+      "true": "rose",
+      "predicted": "camellia",
+      "count": 49
+    },
+    {
+      "true": "watercress",
+      "predicted": "mallow",
+      "count": 28
+    },
+    {
+      "true": "wallflower",
+      "predicted": "globe-flower",
+      "count": 20
+    },
+    {
+      "true": "petunia",
+      "predicted": "hibiscus",
+      "count": 19
+    },
+    {
+      "true": "petunia",
+      "predicted": "morning glory",
+      "count": 17
+    },
+    {
+      "true": "watercress",
+      "predicted": "corn poppy",
+      "count": 17
+    },
+    {
+      "true": "petunia",
+      "predicted": "azalea",
+      "count": 16
+    },
+    {
+      "true": "water lily",
+      "predicted": "lotus",
+      "count": 14
+    },
+    {
+      "true": "californian poppy",
+      "predicted": "buttercup",
+      "count": 13
+    },
+    {
+      "true": "lotus",
+      "predicted": "siam tulip",
+      "count": 13
+    }
+  ]
+}
