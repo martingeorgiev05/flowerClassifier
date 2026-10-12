@@ -1,0 +1,62 @@
+{
+  "mode": "tuning",
+  "best_val_accuracy": 0.7755,
+  "best_phase1_epoch": 20,
+  "best_phase2_epoch": 15,
+  "split": "test",
+  "num_images": 6149,
+  "top1_accuracy": 0.7582,
+  "top5_accuracy": 0.9245,
+  "most_confused": [
+    {
+      "true": "petunia",
+      "predicted": "mexican petunia",
+      "count": 30
+    },
+    {
+      "true": "petunia",
+      "predicted": "morning glory",
+      "count": 25
+    },
+    {
+      "true": "rose",
+      "predicted": "camellia",
+      "count": 25
+    },
+    {
+      "true": "petunia",
+      "predicted": "corn poppy",
+      "count": 24
+    },
+    {
+      "true": "petunia",
+      "predicted": "hibiscus",
+      "count": 17
+    },
+    {
+      "true": "cyclamen",
+      "predicted": "cape flower",
+      "count": 14
+    },
+    {
+      "true": "english marigold",
+      "predicted": "barbeton daisy",
+      "count": 14
+    },
+    {
+      "true": "primula",
+      "predicted": "watercress",
+      "count": 12
+    },
+    {
+      "true": "sword lily",
+      "predicted": "canna lily",
+      "count": 12
+    },
+    {
+      "true": "californian poppy",
+      "predicted": "buttercup",
+      "count": 11
+    }
+  ]
+}
