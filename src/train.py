@@ -49,6 +49,11 @@ def train(model, base_model, train_ds, val_ds=None):
     for layer in base_model.layers[:-50]:
         layer.trainable = False
 
+    # Keep BatchNorm layers frozen
+    for layer in base_model.layers[-50:0]:
+        if isinstance(layer, tf.keras.BatchNormalization):
+            layer.trainable = False
+
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
         loss="sparse_categorical_crossentropy",

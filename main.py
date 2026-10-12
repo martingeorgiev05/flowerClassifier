@@ -1,6 +1,5 @@
 import argparse
 
-from config import IMG_SIZE
 from src.data_loader import load_data
 from src.evaluate import evaluate, plot_training
 from src.model import build_model
@@ -26,7 +25,6 @@ def main():
 
     print("\n Building model...")
     model, base_model = build_model()
-    model.build(input_shape=(None, IMG_SIZE, IMG_SIZE, 3))
     model.summary()
 
     model, history1, history2 = train(model, base_model, train_ds, val_ds)

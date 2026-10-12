@@ -24,19 +24,19 @@ def build_model():
 
     base_model.trainable = False
 
-    model = tf.keras.Sequential(
-        [
-            data_augmentation,
-            base_model,
-            tf.keras.layers.GlobalAveragePooling2D(),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dropout(0.4),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dropout(0.3),
-            tf.keras.layers.Dense(NUM_CLASSES, activation="softmax"),
-        ]
-    )
+    inputs = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+    x = data_augmentation(inputs)
+
+    x = base_model(x, training=False)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    outputs = tf.keras.layers.Dense(NUM_CLASSES, activation="softmax")(x)
+
+    model = tf.keras.Model(inputs, outputs)
 
     model.compile(
         optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
