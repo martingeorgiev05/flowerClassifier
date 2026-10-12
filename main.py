@@ -40,7 +40,7 @@ def main():
             }
         )
 
-        plot_training(history1)
+        plot_training(history1, history2)
     evaluate(model, test_ds, class_names, run_info)
 
     print("\n Done!")

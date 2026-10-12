@@ -106,30 +106,32 @@ def plot_confusion_matrix(cm, path):
     plt.close()
 
 
-def plot_training(history):
-    """Plots accuracy and loss curves."""
-
+def plot_training(history1, history2=None):
+    """Plots accuracy and loss for both phases"""
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    acc = history.history["accuracy"]
-    val_acc = history.history["val_accuracy"]
-    loss = history.history["loss"]
-    val_loss = history.history["val_loss"]
-    epochs = range(1, len(acc) + 1)
+    histories = [history1] if history2 is None else [history1, history2]
+    curves = {
+        key: sum((h.history[key] for h in histories), [])
+        for key in ("accuracy", "val_accuracy", "loss", "val_loss")
+    }
+    epochs = range(1, len(curves["accuracy"]) + 1)
+    phase2_start = len(history1.history["accuracy"]) + 0.5
 
     plt.figure(figsize=(12, 4))
-
-    plt.subplot(1, 2, 1)
-    plt.plot(epochs, acc, label="Train Accuracy")
-    plt.plot(epochs, val_acc, label="Val Accuracy")
-    plt.title("Accuracy")
-    plt.legend()
-
-    plt.subplot(1, 2, 2)
-    plt.plot(epochs, loss, label="Train Loss")
-    plt.plot(epochs, val_loss, label="Val Loss")
-    plt.title("Loss")
-    plt.legend()
+    for i, (key, title) in enumerate(
+        [("accuracy", "Accuracy"), ("loss", "Loss")], start=1
+    ):
+        plt.subplot(1, 2, i)
+        plt.plot(epochs, curves[key], label=f"Train {title}")
+        plt.plot(epochs, curves[f"val_{key}"], label=f"Val {title}")
+        if history2 is not None:
+            plt.axvline(
+                phase2_start, color="gray", linestyle="--", label="Fine-tuning starts"
+            )
+        plt.title(title)
+        plt.xlabel("Epoch")
+        plt.legend()
 
     plt.tight_layout()
     plt.savefig(os.path.join(RESULTS_DIR, "training_curves.png"))
