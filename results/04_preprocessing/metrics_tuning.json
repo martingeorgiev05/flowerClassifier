@@ -1,0 +1,62 @@
+{
+  "mode": "tuning",
+  "best_val_accuracy": 0.8588,
+  "best_phase1_epoch": 30,
+  "best_phase2_epoch": 14,
+  "split": "test",
+  "num_images": 6149,
+  "top1_accuracy": 0.8195,
+  "top5_accuracy": 0.9389,
+  "most_confused": [
+    {
+      "true": "petunia",
+      "predicted": "morning glory",
+      "count": 17
+    },
+    {
+      "true": "petunia",
+      "predicted": "azalea",
+      "count": 16
+    },
+    {
+      "true": "geranium",
+      "predicted": "wallflower",
+      "count": 14
+    },
+    {
+      "true": "water lily",
+      "predicted": "lotus",
+      "count": 13
+    },
+    {
+      "true": "rose",
+      "predicted": "lenten rose",
+      "count": 10
+    },
+    {
+      "true": "petunia",
+      "predicted": "garden phlox",
+      "count": 10
+    },
+    {
+      "true": "petunia",
+      "predicted": "hibiscus",
+      "count": 10
+    },
+    {
+      "true": "lotus",
+      "predicted": "columbine",
+      "count": 9
+    },
+    {
+      "true": "petunia",
+      "predicted": "corn poppy",
+      "count": 9
+    },
+    {
+      "true": "camellia",
+      "predicted": "mallow",
+      "count": 9
+    }
+  ]
+}
