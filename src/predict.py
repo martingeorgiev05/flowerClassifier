@@ -10,7 +10,7 @@ CLASS_NAMES = tfds.builder("oxford_flowers102").info.features["label"].names
 
 
 def load_model():
-    return tf.keras.models.load_model(MODEL_SAVE_PATH)
+    return tf.keras.models.load_model(MODEL_SAVE_PATH, compile=False)
 
 
 def _run_inference(pil_img, model):
