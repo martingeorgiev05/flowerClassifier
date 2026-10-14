@@ -60,13 +60,13 @@ def train(model, base_model, train_ds, val_ds=None):
                 verbose=1,
             ),
         ]
-        reduce_lr = tf.keras.callbacks.ReduceLROnPlayteau(
-            montiro="loss" if final else "val_loss",
-            factor=0.3,
-            patience=2,
-            min_lr=1e-6,
-            verbose=1,
-        )
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="loss" if final else "val_loss",
+        factor=0.3,
+        patience=2,
+        min_lr=1e-6,
+        verbose=1,
+    )
 
     print("\n Phase 1: Training top layers....\n")
     history1 = model.fit(
