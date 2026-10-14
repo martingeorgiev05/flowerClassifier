@@ -1,14 +1,14 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
-from config import BATCH_SIZE, IMG_SIZE, NUM_CLASSES
+from config import BATCH_SIZE, NUM_CLASSES
+from src.preprocessing import preprocess_image
 
 AUTOTUNE = tf.data.AUTOTUNE
 
 
 def _preprocess(image, label):
-    image = tf.image.resize(image, (IMG_SIZE, IMG_SIZE))
-    return image, label
+    return preprocess_image(image), label
 
 
 def _one_hot(image, label):

@@ -3,7 +3,8 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from PIL import Image
 
-from config import IMG_SIZE, MODEL_SAVE_PATH
+from config import MODEL_SAVE_PATH
+from src.preprocessing import preprocess_image
 
 CLASS_NAMES = tfds.builder("oxford_flowers102").info.features["label"].names
 
@@ -13,9 +14,8 @@ def load_model():
 
 
 def _run_inference(pil_img, model):
-    img = pil_img.convert("RGB").resize((IMG_SIZE, IMG_SIZE))
-    img_array = np.expand_dims(np.array(img), axis=0)
-    predictions = model.predict(img_array, verbose=0)
+    img = preprocess_image(np.array(pil_img.convert("RGB")))
+    predictions = model.predict(img[tf.newaxis], verbose=0)
     idx = int(np.argmax(predictions[0]))
     confidence = round(float(predictions[0][idx] * 100), 2)
     return CLASS_NAMES[idx], confidence
