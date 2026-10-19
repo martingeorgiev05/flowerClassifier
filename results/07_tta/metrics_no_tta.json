@@ -1,0 +1,59 @@
+{
+  "mode": "no_tta",
+  "split": "validation",
+  "num_images": 1020,
+  "top1_accuracy": 0.8922,
+  "top5_accuracy": 0.9735,
+  "most_confused": [
+    {
+      "true": "columbine",
+      "predicted": "peruvian lily",
+      "count": 2
+    },
+    {
+      "true": "snapdragon",
+      "predicted": "azalea",
+      "count": 2
+    },
+    {
+      "true": "stemless gentian",
+      "predicted": "balloon flower",
+      "count": 2
+    },
+    {
+      "true": "balloon flower",
+      "predicted": "spring crocus",
+      "count": 2
+    },
+    {
+      "true": "thorn apple",
+      "predicted": "lenten rose",
+      "count": 1
+    },
+    {
+      "true": "bougainvillea",
+      "predicted": "sweet pea",
+      "count": 1
+    },
+    {
+      "true": "yellow iris",
+      "predicted": "carnation",
+      "count": 1
+    },
+    {
+      "true": "peruvian lily",
+      "predicted": "canna lily",
+      "count": 1
+    },
+    {
+      "true": "windflower",
+      "predicted": "lenten rose",
+      "count": 1
+    },
+    {
+      "true": "lenten rose",
+      "predicted": "bolero deep blue",
+      "count": 1
+    }
+  ]
+}

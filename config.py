@@ -25,4 +25,4 @@ LABEL_SMOOTHING = 0.1
 
 MIXUP_ALPHA = 0.2
 
-USE_TTA = True
+USE_TTA = False
