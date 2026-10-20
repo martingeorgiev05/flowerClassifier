@@ -1,0 +1,60 @@
+{
+  "mode": "final",
+  "tta": false,
+  "split": "test",
+  "num_images": 6149,
+  "top1_accuracy": 0.9327,
+  "top5_accuracy": 0.9847,
+  "most_confused": [
+    {
+      "true": "sword lily",
+      "predicted": "canna lily",
+      "count": 8
+    },
+    {
+      "true": "petunia",
+      "predicted": "tree mallow",
+      "count": 8
+    },
+    {
+      "true": "rose",
+      "predicted": "camellia",
+      "count": 8
+    },
+    {
+      "true": "camellia",
+      "predicted": "mallow",
+      "count": 8
+    },
+    {
+      "true": "petunia",
+      "predicted": "hibiscus",
+      "count": 7
+    },
+    {
+      "true": "cyclamen",
+      "predicted": "lotus",
+      "count": 7
+    },
+    {
+      "true": "petunia",
+      "predicted": "azalea",
+      "count": 6
+    },
+    {
+      "true": "snapdragon",
+      "predicted": "canterbury bells",
+      "count": 6
+    },
+    {
+      "true": "hibiscus",
+      "predicted": "mallow",
+      "count": 6
+    },
+    {
+      "true": "lotus",
+      "predicted": "siam tulip",
+      "count": 6
+    }
+  ]
+}
