@@ -1,8 +1,17 @@
+---
+title: Flower Classifier
+emoji: 🌸
+colorFrom: pink
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+
 # 🌸 Flower Classifier
 
 A full-stack web application that identifies **102 species of flowers** from a single photo. Upload any image and get back the species name and confidence score in seconds.
 
-> **Live demo:** _[Add your Hugging Face Space link here once deployed]_
+> **Live demo:** https://huggingface.co/spaces/mgeorgiev5/Flower-Classifier · **Model:** https://huggingface.co/mgeorgiev5/flower-classifier-model
 
 ---
 

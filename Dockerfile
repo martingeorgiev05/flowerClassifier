@@ -10,13 +10,16 @@ RUN npm run build
 FROM python:3.10-slim
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements-serve.txt .
+RUN pip install --no-cache-dir --default-timeout=120 --retries 10 -r requirements-serve.txt
+
 
 COPY . .
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV HF_HUB_DISABLE_XET=1
 
 EXPOSE 7860
 
