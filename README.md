@@ -1,255 +1,148 @@
----
-title: Flower Classifier
-emoji: 🌸
-colorFrom: pink
-colorTo: green
-sdk: docker
-app_port: 7860
----
-
 # 🌸 Flower Classifier
 
-A full-stack web application that identifies **102 species of flowers** from a single photo. Upload any image and get back the species name and confidence score in seconds.
+A full-stack app that identifies **102 flower species** from a single photo with **93.3% top-1 accuracy** on the 6,149-image Oxford 102 test set. A fine-tuned EfficientNetB5 served by a FastAPI inference API, with a React + TypeScript front-end, shipped as one Docker container.
 
-> **Live demo:** https://huggingface.co/spaces/mgeorgiev5/Flower-Classifier · **Model:** https://huggingface.co/mgeorgiev5/flower-classifier-model
+**[▶ Live demo](https://huggingface.co/spaces/mgeorgiev5/Flower-Classifier)** · **[Model on Hugging Face](https://huggingface.co/mgeorgiev5/flower-classifier-model)**
 
----
+<!-- Add a screenshot or GIF of the app, then uncomment the line below -->
+<!-- ![Flower Classifier app](docs/screenshot.png) -->
 
-## Features
+## Highlights
 
-- Classifies **102 flower species** from the Oxford 102 Flowers dataset
-- Drag-and-drop or click-to-upload interface
-- Real-time image preview before submission
-- Confidence score displayed as a visual percentage bar
-- Input validation on both client and server (file type, size, dimensions)
+- **93.3% top-1 / 98.5% top-5 accuracy** on 6,149 held-out test images.
+- **From 73.3% to 93.3%** through a series of measured experiments, each kept only if it helped (see [How I improved the model](#how-i-improved-the-model)).
+- **End-to-end product:** model training, a FastAPI inference API, a React 19 + TypeScript UI, and deployment as a single container on Hugging Face Spaces.
+- **Safe input handling:** uploads are validated on client and server (type, size, dimensions) and processed in memory, never written to disk.
 
----
+## Results
 
-## Tech Stack
+Oxford 102 test split, 6,149 images:
 
-**Machine Learning**
+| Metric                                    | Value      |
+| ----------------------------------------- | ---------- |
+| Top-1 accuracy                            | **93.27%** |
+| Top-5 accuracy                            | 98.47%     |
+| Balanced accuracy (mean per-class recall) | 94.0%      |
 
-- TensorFlow 2.13 / Keras
-- EfficientNetB5 pretrained on ImageNet (transfer learning)
-- Oxford 102 Flowers dataset via `tensorflow-datasets`
+The final model was trained on the train and validation splits combined (2,040 images, 20 per species).
 
-**Backend**
+![Training curves](training_curves.png)
+![Confusion matrix](confusion_matrix.png)
 
-- FastAPI — REST API with automatic OpenAPI docs
-- Pillow — in-memory image processing (no uploads written to disk)
-- Pydantic — request/response validation
+## How I improved the model
 
-**Frontend**
+The first version reached 73.3%. I then changed one thing at a time and kept each change only if accuracy improved:
 
-- React 19 + TypeScript
-- Vite — dev server with HMR and production build
+| Change                                                                           | Test top-1 |
+| -------------------------------------------------------------------------------- | ---------- |
+| Baseline (original setup)                                                        | 73.3%      |
+| Keep BatchNorm layers in inference mode during fine-tuning                       | 75.8%      |
+| Realistic data augmentation                                                      | 79.7%      |
+| Linear classification head + label smoothing                                     | 80.1%      |
+| Aspect-preserving resize + center crop                                           | 82.0%      |
+| Fine-tune EfficientNet blocks 6–7 with AdamW and a cosine learning-rate schedule | 86.4%      |
+| Mixup                                                                            | 86.7%      |
+| Final run on train + validation                                                  | **93.3%**  |
 
----
+The biggest lessons: small preprocessing details (BatchNorm behaviour, resizing without distorting the image) matter as much as the model itself, and with only 10–20 images per species, more training data gave the largest single jump.
 
-## Model Architecture
+> **Note on methodology:** the intermediate numbers above were measured on the test split during development, so the final 93.3% may be slightly optimistic. A stricter protocol would make every decision on the validation split only and use the test split once at the end.
 
-The classifier uses a two-phase transfer learning strategy on top of **EfficientNetB5**:
+## How it works
 
-```
-Input (300×300 RGB)
-    │
-    ▼
-Data Augmentation
-(flip, rotation ±30°, zoom ±30%, contrast, brightness, translation)
-    │
-    ▼
-EfficientNetB5 backbone (ImageNet weights)
-    │
-    ▼
-GlobalAveragePooling2D
-    │
-    ▼
-BatchNormalization → Dense(512, ReLU) → Dropout(0.4)
-                   → Dense(256, ReLU) → Dropout(0.3)
-                   → Dense(102, Softmax)
-    │
-    ▼
-Predicted class + confidence
-```
+**Model.** EfficientNetB5 pretrained on ImageNet, with a linear classification head for 102 classes. Training runs in two phases: first the head only (backbone frozen), then fine-tuning EfficientNet blocks 6–7 with AdamW and a cosine learning-rate schedule. Label smoothing and mixup reduce overfitting on the small dataset.
 
-**Training phases**
+**Preprocessing.** The model takes raw RGB pixels in the 0–255 range (EfficientNet normalizes internally). Images are resized so the shorter side is 300 px (antialiased), then center-cropped to 300×300.
 
-| Phase           | Layers trained                          | Optimizer | Learning rate |
-| --------------- | --------------------------------------- | --------- | ------------- |
-| 1 — Top layers  | Classification head only (base frozen)  | AdamW     | 1e-3          |
-| 2 — Fine-tuning | Last 50 layers of EfficientNetB5 + head | Adam      | 1e-5          |
+**App.** The FastAPI back-end loads the model once at startup and exposes a prediction endpoint. The React front-end is a simple state machine (idle → preview → loading → result) with drag-and-drop upload and a typed API client. In production, one Docker container builds the front-end and serves it together with the API.
 
-Callbacks: `EarlyStopping(patience=6)`, `ModelCheckpoint` (best val_loss), `ReduceLROnPlateau(factor=0.3, patience=2)`.
+## Tech stack
 
----
+| Area             | Tools                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------- |
+| Machine learning | TensorFlow 2.13, Keras, EfficientNetB5 (ImageNet weights), tensorflow-datasets, NumPy |
+| Back-end         | FastAPI, Pydantic, Pillow                                                             |
+| Front-end        | React 19, TypeScript, Vite                                                            |
+| Deployment       | Docker, Hugging Face Spaces                                                           |
 
-## API Reference
+## API
 
-**Base URL (local):** `http://localhost:8000`
-
-### `POST /predict`
-
-Classifies a flower image.
-
-|                  |                       |
-| ---------------- | --------------------- |
-| Content-Type     | `multipart/form-data` |
-| Field            | `file` — image file   |
-| Accepted formats | JPEG, PNG, WEBP       |
-| Max file size    | 5 MB                  |
-| Max dimensions   | 8000 × 8000 px        |
-
-**Response `200`**
+**`POST /predict`** classifies an image sent as `multipart/form-data` in the field `file`. Accepts JPEG, PNG and WEBP up to 5 MB and 8000×8000 px.
 
 ```json
-{
-  "flower": "sunflower",
-  "confidence": 97.43
-}
+{ "flower": "sunflower", "confidence": 97.43 }
 ```
 
-**Error responses**
+| Code  | Reason                                                        |
+| ----- | ------------------------------------------------------------- |
+| `413` | File larger than 5 MB                                         |
+| `422` | Unsupported or unreadable file, or image dimensions too large |
 
-| Code  | Reason                                    |
-| ----- | ----------------------------------------- |
-| `422` | Unsupported file type or unreadable image |
-| `413` | File exceeds 5 MB                         |
-| `422` | Image dimensions exceed limit             |
+**`GET /health`** returns `{ "status": "ok" }`.
 
-### `GET /health`
+Interactive API docs are available at `/docs` when the server is running.
 
-```json
-{ "status": "ok" }
-```
+## Run locally
 
----
-
-## Local Development
-
-### Prerequisites
-
-- Python 3.10+
-- Node.js 18+
-- A trained model at `models/flower_model.keras` (see [Training](#training))
-
-### 1. Backend
+Requires Python 3.10+ and Node.js 18+. Download the trained model from [Hugging Face](https://huggingface.co/mgeorgiev5/flower-classifier-model) and place it at the path set in `config.py`.
 
 ```bash
-# Create and activate virtual environment
+# Back-end
 python -m venv venv
 source venv/bin/activate          # Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Start the API server (from project root)
 PYTHONPATH=. uvicorn api.main:app --port 8000 --reload
-```
 
-The API is available at `http://localhost:8000`.  
-Interactive docs: `http://localhost:8000/docs`
-
-### 2. Frontend
-
-```bash
+# Front-end (in a second terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite dev server proxies `/predict` and `/health` to the backend automatically — no CORS setup needed.
+Open `http://localhost:5173`. The Vite dev server forwards API calls to the back-end, so no CORS setup is needed.
 
-### Quick prediction (no frontend)
-
-```bash
-python tests/test.py
-# or with curl:
-curl -F "file=@sample_images/daisy-test.jpg" http://localhost:8000/predict
-```
-
----
-
-## Training
-
-If you want to retrain the model from scratch:
-
-```bash
-# Activate virtualenv first
-python main.py
-```
-
-The training pipeline will:
-
-1. Download the Oxford 102 Flowers dataset automatically via `tensorflow-datasets` (~330 MB, cached to `~/.keras/datasets/`)
-2. Build the EfficientNetB5 model
-3. Run Phase 1 training (frozen backbone, up to 30 epochs)
-4. Run Phase 2 fine-tuning (last 50 layers unfrozen, up to 15 epochs)
-5. Save the best checkpoint to `models/flower_model.keras`
-6. Output `training_curves.png` and `confusion_matrix.png`
-
-Hyperparameters are in [`config.py`](config.py).
-
----
-
-## Project Structure
-
-```
-├── api/
-│   ├── main.py              # FastAPI app, lifespan model loading, CORS
-│   └── routes/
-│       └── predict.py       # POST /predict + GET /health, input validation
-├── frontend/
-│   └── src/
-│       ├── App.tsx           # UI state machine (idle → preview → loading → result)
-│       ├── api/client.ts     # Typed fetch wrapper
-│       └── components/
-│           ├── DropZone.tsx  # Drag-and-drop upload with client-side validation
-│           └── ResultCard.tsx
-├── src/
-│   ├── data_loader.py        # tfds dataset pipeline
-│   ├── model.py              # EfficientNetB5 model definition
-│   ├── train.py              # Two-phase training loop
-│   ├── evaluate.py           # Metrics, training curves, confusion matrix
-│   └── predict.py            # Inference (used by both API and tests)
-├── config.py                 # All hyperparameters and paths
-├── main.py                   # Training entry point
-└── tests/test.py             # Single-image prediction script
-```
-
----
+To retrain the model from scratch, run `python main.py`. It downloads the dataset, trains both phases, saves the best model, and writes `training_curves.png` and `confusion_matrix.png`. Hyperparameters are in `config.py`.
 
 ## Deployment
 
-This app is designed to run as a single container on **Hugging Face Spaces** (free tier).
-
-The `Dockerfile` at the project root:
-
-1. Builds the React frontend (`npm run build`)
-2. Installs Python dependencies
-3. Starts FastAPI on port `7860` (required by HF Spaces)
-4. Serves both the API and the React static files from the same process
-
-**To deploy:**
+The `Dockerfile` builds the React front-end, installs the Python dependencies, and starts FastAPI on port 7860, serving the API and the static front-end from one process. Pushing to the Hugging Face Space rebuilds and redeploys it automatically:
 
 ```bash
-# Add HF Spaces as a git remote
-git remote add space https://huggingface.co/spaces/YOUR_USERNAME/flower-classifier
-
-# Push — HF will build and deploy automatically
+git remote add space https://huggingface.co/spaces/mgeorgiev5/Flower-Classifier
 git push space main
 ```
 
-The build takes ~5–10 minutes on first push (TensorFlow install). Subsequent pushes are faster due to Docker layer caching.
+## Project structure
 
----
+```
+├── api/
+│   ├── main.py              # FastAPI app, loads the model at startup
+│   └── routes/predict.py    # POST /predict, GET /health, input validation
+├── frontend/src/
+│   ├── App.tsx              # UI state machine
+│   ├── api/client.ts        # Typed API client
+│   └── components/          # DropZone, ResultCard
+├── src/
+│   ├── data_loader.py       # Dataset pipeline and preprocessing
+│   ├── model.py             # EfficientNetB5 model definition
+│   ├── train.py             # Two-phase training
+│   ├── evaluate.py          # Metrics, training curves, confusion matrix
+│   └── predict.py           # Inference, shared by the API and tests
+├── config.py                # Hyperparameters and paths
+├── main.py                  # Training entry point
+└── Dockerfile
+```
+
+## Limitations
+
+- **Only 102 species.** The model knows only the dataset's flowers, which are common in the United Kingdom. Any other flower gets a confident but wrong answer from this list.
+- **No "not a flower" class.** A photo of a dog or a car still gets a flower name.
+- **Lower confidence values.** Because of label smoothing, scores are lower than in typical classifiers; 85% is already a confident prediction.
+- **Look-alike species.** Some pairs are still confused, such as rose and camellia, or petunia and morning glory.
 
 ## Dataset
 
-[Oxford 102 Flower Categories](https://www.tensorflow.org/datasets/catalog/oxford_flowers102) — 8,189 images across 102 flower species, split into train (1,020), validation (1,020), and test (6,149) sets.
-
-Classes include: alpine sea holly, anthurium, artichoke, azalea, ball moss, balloon flower, barbeton daisy, bearded iris, bee balm, bird of paradise, and 92 more.
-
----
+[Oxford 102 Flower Categories](https://www.tensorflow.org/datasets/catalog/oxford_flowers102): 8,189 images of 102 species, split into train (1,020), validation (1,020) and test (6,149).
 
 ## License
 
